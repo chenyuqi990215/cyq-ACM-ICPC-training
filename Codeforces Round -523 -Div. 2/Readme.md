@@ -1,7 +1,7 @@
 Codeforces Round -523 -Div. 2
-Problem set
 
-ID	Name	 	        Status 
+ID	Name	 	        Status
+
 A	Coins           Accepted
 
 B	Views Matter    Accepted
