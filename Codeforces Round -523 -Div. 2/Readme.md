@@ -7,4 +7,4 @@ Problem set
 * C	Multiplicity `Accepted` <br> 
 * D	TV Shows `Accepted` <br> 
 * E	Politics `Not Attempted` <br> 
-* F Lost Root `Not Attempted` <br> 
+* F Lost Root `Accepted` <br> 
