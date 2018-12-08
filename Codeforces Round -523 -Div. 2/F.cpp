@@ -14,7 +14,7 @@ struct node
 		return a==rhs.a && b==rhs.b && c==rhs.c;
 	}
 };
-//map<node,bool> query;
+map<node,bool> query;
 int leave[maxn];
 //leave[i]==1:is a leave
 //leave[i]==0:not checked
@@ -25,14 +25,14 @@ bool expect[maxn];
 int n,len;
 bool interact(int a,int b,int c)
 {
-//	if (query.count(node(a,b,c))) return query[node(a,b,c)];
-//	if (query.count(node(c,b,a))) return query[node(c,b,a)];
+	if (query.count(node(a,b,c))) return query[node(a,b,c)];
+	if (query.count(node(c,b,a))) return query[node(c,b,a)];
 	string respond;
 	cout<<"? "<<a<<' '<<b<<' '<<c<<endl;
 	fflush(stdout);
 	cin>>respond;
 	bool flag=(respond=="Yes")?true:false;
-//	query[node(a,b,c)]=flag;
+	query[node(a,b,c)]=flag;
 	return flag;
 }
 int random()
