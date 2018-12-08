@@ -16,12 +16,15 @@ struct node
 };
 map<node,bool> query;
 int leave[maxn];
-//leave[i]==1:is a leave
-//leave[i]==0:not checked
-//leave[i]==-1:not a leave
+/*
+ * leave[i]==1:is a leave 
+ * leave[i]==0:not checked 
+ * leave[i]==-1:not a leave
+ */
 bool expect[maxn];
-//expect[i]==false:not expected in the random()
-//expect[i]==true:expected in the random()
+/* expect[i]==false:not expected in the random();
+ * expect[i]==true:expected in the random()
+ */
 int n,len;
 bool interact(int a,int b,int c)
 {
