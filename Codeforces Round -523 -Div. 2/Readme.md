@@ -6,5 +6,5 @@ Problem set
 * B	Views Matter `Accepted` <br> 
 * C	Multiplicity `Accepted` <br> 
 * D	TV Shows `Accepted` <br> 
-* E	Politics `Not Attempted` <br> 
+* E	Politics `Accepted` <br> 
 * F Lost Root `Accepted` <br> 
