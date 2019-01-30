@@ -8,6 +8,7 @@ Problem set
 * D	Olya and magical square `Accepted` <br> 
 * E	Sonya and Matrix Beauty `Accepted` <br> 
 * F Katya and Segments Sets `Accepted` <br> 
+
 More Reading
 ------------
 * Manacher https://blog.csdn.net/mitsuha_/article/details/78209768 <br>
