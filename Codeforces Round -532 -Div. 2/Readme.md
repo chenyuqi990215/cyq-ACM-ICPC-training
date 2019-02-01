@@ -11,4 +11,4 @@ Problem set
 
 More Reading
 ------------
-异或线性基 https://blog.sengxian.com/algorithms/linear-basis
+* 异或线性基 https://blog.sengxian.com/algorithms/linear-basis
