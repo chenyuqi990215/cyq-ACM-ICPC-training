@@ -1,4 +1,4 @@
-Codeforces Round #532 (Div. 2)
+Codeforces Round #536 (Div. 2)
 ==============================
 Problem set
 -----------
@@ -8,3 +8,7 @@ Problem set
 * D	Lunar New Year and a Wander `Accepted` <br> 
 * E	Lunar New Year and Red Envelopes `Accepted` <br> 
 * F Lunar New Year and a Recursive Sequence `Accepted` <br> 
+
+More Reading
+------------
+* 原根 https://blog.csdn.net/zhouyuheng2003/article/details/80163139
