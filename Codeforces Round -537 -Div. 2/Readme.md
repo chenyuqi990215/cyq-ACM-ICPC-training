@@ -6,4 +6,4 @@ Problem set
 * B	Average Superhero Gang Power `Accepted` <br> 
 * C	Creative Snap `Accepted` <br> 
 * D	Destroy the Colony `Accepted` <br> 
-* E	Tree `Accpeted` <br> 
+* E	Tree `Accepted` <br> 
