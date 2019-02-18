@@ -1,4 +1,4 @@
-Codeforces Round #523 (Div. 2)
+Codeforces Round #538 (Div. 2)
 ==============================
 Problem set
 -----------
@@ -7,4 +7,4 @@ Problem set
 * C	Trailing Loves (or L'oeufs?) `Accepted` <br> 
 * D	Flood Fill `Accepted` <br> 
 * E	Arithmetic Progression `Accepted` <br> 
-* F Please, another Queries on Array? `Attemped` <br> 
+* F Please, another Queries on Array? `Accepted` <br> 
