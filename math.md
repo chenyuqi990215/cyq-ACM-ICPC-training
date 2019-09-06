@@ -106,7 +106,7 @@ ll china(int n,int *a,int *m)  
 }  
 ```
 **拓展中国剩余定理（可以处理m[i]不互质情况）**
-``C++
+```C++
 ll gcd(ll a,ll b,ll &x,ll &y)
 {
     if (!b)
@@ -1618,6 +1618,7 @@ int main()
 	return 0;
 }
 15、Miller_Rabin判大素数
+```C++
 #include <bits/stdc++.h>
 using namespace std;
 typedef __int128_t ll;
@@ -1702,7 +1703,122 @@ static ArrayList<BigInteger> gcd(BigInteger a,BigInteger b)
         }
 }
 //d=result[0],x=result[1],y=result[2]
-17、数论小结论
+```
+#### **17、计算$ a^{b^{b^{...^b}}} $**
+分析：利用拓展欧拉定理。
+$ a^c=\left\{
+\begin{aligned}
+& a^{c\ mod\ phi(m)} &  ,gcd(a,m)=1 \\
+& a^{c} &  ,gcd(a,m)\neq 1,c<phi(m) \\
+& a^{c\ mod\ phi(m)+phi(m)} & ,gcd(a,m)\neq 1,c \geq phi(m) 
+\end{aligned}
+\right.
+$
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const int maxn=1e7+5;
+bool unprime[maxn];
+int prime[maxn],phi[maxn];
+void get_phi()
+{
+	int i,j,k=0;
+	memset(unprime,false,sizeof(unprime));
+	for (int i=2;i<maxn;i++)
+	{
+		if (!unprime[i])
+		{
+			prime[k++]=i;
+			phi[i]=i-1;
+		}
+		for (j=0;j<k && prime[j]*i<maxn;j++)
+		{
+			unprime[prime[j]*i]=true;
+			if (i%prime[j])
+				phi[prime[j]*i]=phi[i]*(prime[j]-1);
+			else
+			{
+				phi[prime[j]*i]=phi[i]*prime[j];
+				break;
+			} 
+		}
+	}
+} 
+int q,a,b,p;
+ll k;
+ll pow(ll a,ll p,ll mod)
+{
+	if (p==0) return 1;
+	ll ret=pow(a,p/2,mod);
+	ret=ret*ret%mod;
+	if (p%2==1) ret=ret*a%mod;
+	return ret; 
+}
+ll pow2(ll a,ll q)
+{
+	if (a==-1) return -1;
+	if (q==0) return 1;
+	ll ret=pow2(a,q/2);
+	if (ret==-1) return -1;
+	ret=ret*ret;
+	if (ret>p) return -1;
+	if (q%2==1) 
+	{
+		ret=ret*a;
+		if (ret>p) return -1;
+	}
+	return ret;
+}
+ll cal(int dep)
+{
+	ll tmp=1;
+	for (int i=0;i<k-dep+1;i++)
+	{
+		tmp=pow2(b,tmp);
+		if (tmp==-1) return -1;
+	}
+	return tmp;
+}
+pair<ll,ll> dfs(int dep,int mod)
+{
+	if (mod==1) return make_pair(0,cal(dep));
+	if (dep==k+1) return make_pair(1,1);
+	if (dep==0)
+	{
+		pair<ll,ll> ret=dfs(dep+1,phi[mod]);
+		ll t=ret.second,c=ret.first,cur;
+		if (t!=-1)
+			cur=pow2(a,t);
+		else cur=-1;
+		if (t==-1 || t>=phi[mod]) return make_pair(pow(a,c%phi[mod]+phi[mod],mod),cur);
+		else return make_pair(pow(a,c%phi[mod],mod),cur);	
+	}
+	else
+	{
+		pair<ll,ll> ret=dfs(dep+1,phi[mod]);
+		ll t=ret.second,c=ret.first,cur;
+		if (t!=-1)
+			cur=pow2(b,t);
+		else cur=-1;
+		if (t==-1 || t>=phi[mod]) return make_pair(pow(b,c%phi[mod]+phi[mod],mod),cur);
+		else return make_pair(pow(b,c%phi[mod],mod),cur);	
+	} 
+}
+int main()
+{
+	get_phi();	
+	scanf("%d",&q);
+	while (q--)
+	{
+		scanf("%d%d%lld%d",&a,&b,&k,&p);
+		ll ans=dfs(0,p).first;
+		printf("%lld\n",ans);
+	}
+	return 0;
+}
+```
+18、数论小结论
 
 
   [1]: http://static.zybuluo.com/chenyuqi/h3ito758xal6d2z73hd7z3q4/1.png
