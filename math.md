@@ -193,7 +193,7 @@ int rev[maxl];
 void getrev(int bit)
 {
     for (int i=0;i<(1<<bit);i++)
-	{
+    {
         rev[i]=(rev[i>>1]>>1)|((i&1)<<(bit-1));
     }
 }
@@ -263,6 +263,7 @@ int main()
 }
 ```
 （2）NTT
+注：$ 998244353 $的原根是$ 3 $，$ 10^9+7 $的原根是$ 5 $。
 ```C++
 #include <bits/stdc++.h>
 using namespace std;
