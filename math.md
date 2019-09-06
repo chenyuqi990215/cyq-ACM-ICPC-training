@@ -161,9 +161,22 @@ int log_mod(int a,int b)  
 ```
 #### **5、莫比乌斯反演**
 （1）莫比乌斯反演公式
-![1.png-26kB][1]
+**约数的莫比乌斯反演：**
+若：$f(n)=\sum_{d|n}^{}g(d) $
+则：$g(n)=\sum_{d|n}\mu(d)f(\frac{n}{d})$
+**倍数的莫比乌斯反演：**
+若：$f(n)=\sum_{n|d}^{}g(d) $
+则：$g(n)=\sum_{n|d}\mu(\frac{d}{n})f(d)$
 （2）莫比乌斯函数
-![2.png-26.3kB][2]
+$ \mu(x)=\left\{
+\begin{aligned}
+1 & & x=1 \\
+0 & & x存在平方因子 \\
+-1 & & x有奇数个质因子 \\
+1 & & x偶奇数个质因子
+\end{aligned}
+\right.
+$
 #### **6、FFT和NTT算法**
 （1）FFT
 ```C++
@@ -1042,7 +1055,7 @@ void f(ll a,ll b,ll c,ll d,ll& x,ll& y)
 ```
 #### **14、齐次线性递推式：**
 问题描述：已知$F_n=\sum_{i=1}^{k}f_i*F_{n-i}$，且已知$ \{F_n\}$的前k项，求$F_n$。
-注意：代码中传的参数为数列的前n项，一般若时k阶线性递推式，则传前项pk,p<10。
+注意：代码中传的参数为数列的前n项，一般若时k阶线性递推式，则传前$ pk $项$p<10 $。
 ```C++
 #include <cstdio>
 #include <cstring>
@@ -1155,6 +1168,7 @@ int main() {
 优化：
 注意到，所以个数求次线性基中有大量重复计算，可以先求出个数的线性基，然后每次只插入剩下的个数。
 代码：
+```C++
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -1202,7 +1216,7 @@ struct XorBase
 	    free++; 
 	    return false;
 	}
-bool check(int x)
+    bool check(int x)
 	{
 		for (int j=Max;j>=0;j--)
 		{
@@ -1268,7 +1282,7 @@ int main()
 		}
 		ll ans=0;
 		if (n!=base1.pivit) 
-ans=1ll*(base1.free)*pow2[base1.free-1]%mod;
+            ans=1ll*(base1.free)*pow2[base1.free-1]%mod;
 		for (int i=0;i<piv.size();i++)
 		{
 			XorBase base3=base2;
@@ -1284,9 +1298,11 @@ ans=1ll*(base1.free)*pow2[base1.free-1]%mod;
 	}
 	return 0;
 }
+```
 （3）线性基区间查询
 分析：考虑维护每个点的前缀线性基,线性基里将靠右的数字尽可能放高位,就是存一个额外存一个位置 p,表示这个位上的数的位置,从高位到低位扫,如果当前位置大于这个位上的位置那么交换,然后就得到了一个靠右的数字尽可能在高位的线性基
 然后对于询问[l,r]在r的前缀线性基里找,只在位置大于等于 l的位更新答案。
+```C++
 struct XorBase
 {
 	static const int Max=30;
@@ -1348,8 +1364,10 @@ int main()
 	}
 	return 0;
 }
+```
 （4）Trie树
 问题描述：给定一个数组a和一个数x，求。
+```C++
 struct trie
 {
 	int ch[maxn][2];
@@ -1417,10 +1435,12 @@ struct trie
 		return val[u];
 	}
 };
+```
 （5）FWT
 。
 。
 。
+```C++
 #include <iostream>
 #include <cstdio>
 using namespace std;
@@ -1499,6 +1519,7 @@ int main()
 	FWT_xor(b,1<<n,-1);
 	return 0;
 }
+```
 题意：
 给定两个序列 A[0...2^m-1], B[0...2^m-1]
 求 C[0...2^m-1]  ，满足：，m <= 19。
@@ -1515,33 +1536,7 @@ int main()
 将 A,B,C三个数组按 bits 划分：
 。
 最后按不同的维度(bits)做 FWT即可。
-/*
-HDU 6057 - Kanade's convolution [ FWT ]  |  2017 Multi-University Training Contest 3
-题意：
-	给定两个序列 A[0...2^m-1], B[0...2^m-1]
-	求 C[0...2^m-1]  ，满足：
-		C[k] = ∑[i&j==k] A[i^j] * B[i|j]
-	m <= 19
-分析：
-	看C[k]的形式与集合卷积的形式接近，故转化式子时主要向普通的集合卷积式方向靠
-	与三种位运算都相关的结论是 ： i^j + i&j = i|j
-	设 x = i^j, y = i|j，则显然 k = y-x，且 k 与 x 互成关于 y 的补集，即 k = x^y
-
-	再来关心给定(x,y)，符合 x = i^j, y = i|j的(i,j)对的数目
-		注意到相同的位 i&j 是确定的，x = i^j 是i和j不同的位的数目，这部分谁是 0 谁是 1 不固定
-			故(i,j)对的数目为 2^bits(x)
-
-	此时重写原式： C[k] = ∑ [k == x^y] [k == y-x] A[x]*2^bits(x) * B[y]
-
-	设 A'[x] = A[x]*2^bits(x)
-	由于 [k == x^y]，第二个条件 [k == y-x] 等价于 bits(k) == bits(y) - bits(x)
-		C[k] = ∑ [k == x^y] [bits(k) == bits(x) - bits(y)] A'[x] * B[y]
-
-	将 A,B,C三个数组按 bits 划分：
-		C[bits(k)][k] = ∑ [k == x^y] A[bits(x)][x]*2^bits(x) * B[bits(y)][y]
-
-	最后按不同的维度(bits)做 FWT即可
-*/
+```C++
 #include <iostream>
 #include <cstring>
 #include <cstdio>
@@ -1617,7 +1612,8 @@ int main()
 	printf("%lld\n",ans);
 	return 0;
 }
-15、Miller_Rabin判大素数
+```
+#### **16、Miller_Rabin判大素数**
 ```C++
 #include <bits/stdc++.h>
 using namespace std;
@@ -1818,8 +1814,5 @@ int main()
 	return 0;
 }
 ```
-18、数论小结论
-
-
-  [1]: http://static.zybuluo.com/chenyuqi/h3ito758xal6d2z73hd7z3q4/1.png
-  [2]: http://static.zybuluo.com/chenyuqi/st62apdp598kwpxsckgygzb3/2.png
+#### **18、拉格朗日插值**
+#### **19、数论小结**
