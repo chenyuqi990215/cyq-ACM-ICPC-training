@@ -1676,7 +1676,9 @@ bool Miller_Pabin(ll n)//Miller测试的主体结构
     }    
     return true;
 }
-16、Java版exgcd
+```
+#### **17、Java版exgcd**
+```C++
 static ArrayList<BigInteger> gcd(BigInteger a,BigInteger b)
     {
         BigInteger ans;
@@ -1701,7 +1703,7 @@ static ArrayList<BigInteger> gcd(BigInteger a,BigInteger b)
 }
 //d=result[0],x=result[1],y=result[2]
 ```
-#### **17、计算$ a^{b^{b^{...^b}}} $**
+#### **18、计算$ a^{b^{b^{...^b}}} $**
 分析：利用拓展欧拉定理。
 $ a^c=\left\{
 \begin{aligned}
@@ -1815,5 +1817,5 @@ int main()
 	return 0;
 }
 ```
-#### **18、拉格朗日插值**
-#### **19、数论小结**
+#### **19、拉格朗日插值**
+#### **20、数论小结**
