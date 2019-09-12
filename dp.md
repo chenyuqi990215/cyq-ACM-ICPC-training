@@ -1,6 +1,6 @@
-## ACM动态规划专题
-### 1、数位dp
-#### （1）模板代码
+### **ACM动态规划专题**
+#### **1、数位dp**
+（1）模板代码
 ``` C++
 int dfs(int i, int s, bool e)   
 {  
@@ -13,13 +13,14 @@ int dfs(int i, int s, bool e)
     return e?res:f[i][s]=res;  
 }  
 ```
-#### 其中：
+**其中：**
 f为记忆化数组；
 i为当前处理串的第i位（权重表示法，也即后面剩下i+1位待填数）；
 s为之前数字的状态（如果要求后面的数满足什么状态，也可以再记一个目标状态t之类，for的时候枚举下t）；
 e表示之前的数是否是上界的前缀（即后面的数能否任意填）。
 for循环枚举数字时，要注意是否能枚举0，以及0对于状态的影响，有的题目前导0和中间的0是等价的，但有的不是，对于后者可以在dfs时再加一个状态变量z，表示前面是否全部是前导0，也可以看是否是首位，然后外面统计时候枚举一下位数。It depends.
-#### （2）题意：统计一个范围内数的个数，要求该数能被各位上的数整除。范围2^64。
+
+（2）题意：统计一个范围内数的个数，要求该数能被各位上的数整除。范围2^64。
 分析：dp之前，为2520打个表，把LCM给离散化Hash。
 ```C++
 #include <bits/stdc++.h>  
@@ -77,7 +78,8 @@ int main()
     return 0;  
 }  
 ```
-#### （3）题意：给你一个区间，问你在这个区间内最长递增子序列长度恰为K的数有多少个。
+
+（3）题意：给你一个区间，问你在这个区间内最长递增子序列长度恰为K的数有多少个。
 分析：回忆LIS复杂度为nlogn的算法，用g[i]表示d值为i的最小状态编号，此题中，由于g[i]的取值为0-9，所以可以状态压缩保存。
 ``` C++
 #include <bits/stdc++.h>  
@@ -136,7 +138,8 @@ int main()
     return 0;  
 }
 ```
-#### （4）题意：求出现的数字，所有偶数出现奇数次，所有奇数出现偶数次的个数。
+
+（4）题意：求出现的数字，所有偶数出现奇数次，所有奇数出现偶数次的个数。
 分析：注意前导0的处理。
 ```C++
 #include <bits/stdc++.h>  
@@ -194,7 +197,8 @@ int main()
     return 0;  
 }  
 ```
-#### （5）题意：统计区间中不含7，且每一位数加起来的和不是7的倍数，且这个数不是7的倍数的所有数的平方和。
+
+（5）题意：统计区间中不含7，且每一位数加起来的和不是7的倍数，且这个数不是7的倍数的所有数的平方和。
 分析：数位dp+统计平方和，先统计个数，再统计和，最后统计平方和。
 ```C++
 #include <bits/stdc++.h>  
@@ -312,7 +316,169 @@ int main()
     return 0;  
 }  
 ```
-#### （6）求$ x\in[1,a],y\in[a,b],x\&y>z $的方案数。
+（6）题意:给出一些模式串，给出一个范围[A,B],求出区间内有多少个数，写成BCD之后，不包含模式串。
+分析：对模式串建AC自动机，在AC自动机上数位dp。
+```C++
+#include <bits/stdc++.h>
+#define sigma_size 2
+#define maxn 2000+10
+#define maxl 20+10
+#define mod 1000000009
+using namespace std;
+int ch[maxn][sigma_size],match[maxn],f[maxn],sz,n;
+double prob[sigma_size],d[maxn][maxl];
+char t[sigma_size];
+char s[maxl],a[205],b[205];
+typedef long long ll;
+void init()
+{
+	memset(ch[0],0,sizeof(ch[0]));
+	memset(match,0,sizeof(match));
+	sz=1;
+}
+int idx(char c)
+{
+	return c-'0';
+}
+void insert(char *s)
+{
+	int u=0;
+	for (int i=0;i<strlen(s);i++)
+	{
+		int c=idx(s[i]);
+		if (!ch[u][c])
+		{
+			memset(ch[sz],0,sizeof(ch[sz]));
+			ch[u][c]=sz++;
+		} 
+		u=ch[u][c];
+	}
+	match[u]=1;
+}
+void get_fail()
+{
+	queue <int> q;
+	f[0]=0;
+	for (int c=0;c<sigma_size;c++)
+	{
+		int u=ch[0][c];
+		if (u)
+		{
+			f[u]=0;
+			q.push(u); 
+		} 
+	}
+	while (!q.empty())
+	{
+		int r=q.front();
+		q.pop();
+		for (int c=0;c<sigma_size;c++)
+		{
+			int u=ch[r][c];
+			if (!u)
+			{
+				ch[r][c]=ch[f[r]][c];
+				continue;
+			}
+			q.push(u);  //note!!!
+			int v=f[r];
+			while (v && !ch[v][c]) v=f[v];
+			f[u]=ch[v][c];
+			match[u]|=match[f[u]];  //note!!!
+		}
+	}
+}
+char digit[10][5]={"0000","0001","0010","0011","0100","0101","0110","0111","1000","1001"};
+int newstate(int u,int d)
+{
+	for (int i=0;i<4;i++)
+	{
+		int v=ch[u][idx(digit[d][i])];
+		if (match[v]) return -1;
+		u=v;
+	}
+	return u;
+}
+ll dp[205][maxn];
+//dfs2考虑前导0
+ll dfs2(int i,int u)
+{
+	if (u==-1) return 0;
+	if (i==-1) return 1;
+	if (dp[i][u]>=0) return dp[i][u];
+	ll ret=0;
+	for (int d=0;d<=9;d++)
+		ret=(ret+dfs2(i-1,newstate(u,d)))%mod;
+	dp[i][u]=ret;
+	return ret;
+}
+void get_dp()
+{
+	for (int i=0;i<=200;i++)
+		for (int u=0;u<sz;u++)
+			if (dp[i][u]<0)
+				dfs2(i,u);
+}
+int x[205];
+//dfs不考虑前导0 
+ll dfs(int i,int u,bool e,bool z)
+{
+	if (u==-1) return 0;
+	if (i==-1) return 1;
+	if (!e && !z) return dp[i][u];
+	int w=e?x[i]:9;
+	ll ret=0;
+	for (int d=0;d<=w;d++)
+		ret=(ret+dfs(i-1,z && d==0?0:newstate(u,d),e && d==w,z && d==0))%mod;
+	return ret;
+}
+ll cal(char *s)
+{
+	int len=strlen(s);
+	for (int i=0,j=len-1;i<len;i++,j--)
+		x[i]=s[j]-'0';
+	return dfs(len-1,0,true,true);
+}
+void sub_one(char *s)
+{
+	int len=strlen(s);
+	for (int j=len-1;j>=0;j--)
+	{
+		if (s[j]!='0')
+		{
+			s[j]--;
+			break;
+		}
+		s[j]='9';
+	}
+	if (s[0]=='0')
+		for (int i=1;i<=len;i++)
+			s[i-1]=s[i];
+}
+int main()
+{
+	int t,n;
+	scanf("%d",&t);
+	while (t--)
+	{
+		memset(dp,-1,sizeof(dp));
+		init();
+		scanf("%d",&n);
+		for (int i=0;i<n;i++)
+		{
+			scanf("%s",s);
+			insert(s);
+		}
+		get_fail();
+		get_dp();
+		scanf("%s%s",a,b);
+		sub_one(a);
+		printf("%lld\n",(cal(b)-cal(a)+mod)%mod);
+	}
+	return 0;
+}
+```
+（7）题意：求$ x\in[1,a],y\in[a,b],x\&y>z $的方案数。
 ```C++
 #include <bits/stdc++.h>
 using namespace std;
@@ -327,8 +493,8 @@ ll dfs1(int len,bool limc,bool lima,bool limb,bool leax,bool leay)
         if (limc || leax || leay) return 0;
         return 1;
     }
-if (dp1[len][limc][lima][limb][leax][leay]!=-1) 
-return dp1[len][limc][lima][limb][leax][leay];
+    if (dp1[len][limc][lima][limb][leax][leay]!=-1) 
+        return dp1[len][limc][lima][limb][leax][leay];
     int lx=(lima)?a[len]:1;
     int ly=(limb)?b[len]:1;
     ll ret=0;
@@ -388,9 +554,9 @@ int main()
     return 0;
 }
 ```
-#### 注意：转移前需要判断合法性，所有dfs中的状态变量都可以记忆化。
-### 2、轮廓线dp
-#### 题意:在$ n \times m $的棋盘中放置$ 1 \times 1 $或$ 1 \times 2 $的骨牌，且$ 1 \times 1 $的骨牌数在$ c $到$ d $之间。输入$ n \times m$的棋盘的初始状态，求填满棋盘的方法数。
+**注意：转移前需要判断合法性，所有dfs中的状态变量都可以记忆化。**
+#### **2、轮廓线dp**
+题意:在$ n \times m $的棋盘中放置$ 1 \times 1 $或$ 1 \times 2 $的骨牌，且$ 1 \times 1 $的骨牌数在$ c $到$ d $之间。输入$ n \times m$的棋盘的初始状态，求填满棋盘的方法数。
 ```C++
 #include <iostream>  
 #include <cstring>  
@@ -456,8 +622,8 @@ int main()
     return 0;  
 }  
 ```
-### 3、树形dp
-#### 题意：给定一棵树，每个节点有一个价值 （ $ v_i(v_i = a_i - b_i $)），两人轮流操作，若一个人选一个节点$ u $，则另一个人只能在其儿子节点中选一个节点，先手目标是最大化所有价值之和，后手目标是最小化价值之和。根可以由先手确定，问在左右情况下，最后所有走过的节点的价值之和为多少。
+#### **3、树形dp**
+题意：给定一棵树，每个节点有一个价值 （ $ v_i(v_i = a_i - b_i $)），两人轮流操作，若一个人选一个节点$ u $，则另一个人只能在其儿子节点中选一个节点，先手目标是最大化所有价值之和，后手目标是最小化价值之和。根可以由先手确定，问在左右情况下，最后所有走过的节点的价值之和为多少。
 分析：设根为1（即下手选择1号节点为根），$ f[u][0] $ 为以$ u $ 为根的子树中先手到达该节点的最优解， $ f[u][1] $为以$ u $为根的子树中后手到达该节点的最优解，由 minmax准则，有$ f[u][0]=max{f[v][1]}+v_u , f[u][1]=min{f[v][0]} + v_u $。
 dfs一次后$ f[1][0] $为以1为根的答案。
 再做一次dfs就可以得到所有情况下的答案。
@@ -591,8 +757,8 @@ int main()
     return 0;
 }
 ```
-#### 注意：各种细节的讨论和初始化条件。
-### 4、斜率优化dp
+**注意：各种细节的讨论和初始化条件。**
+#### **4、斜率优化dp**
 模板：考虑dp转移式$ dp[i]=min(dp[j]+(s[i]-s[j])^2+m) $ 。
 当i固定时，若j比k优，则有 $ dp[j]+(s[i]-s[j])^2+m < dp[k]+(s[i]-s[k])^2+m $，将这个式子化简得$ \frac{dp[j]+sum[j]^2-(dp[k]+sum[k]^2)}{2(sum[j]-sum[k])}<sum[i] $，
 令$ f[k]=dp[k]+sum[k]^2,g[k]=2*sum[k] $，则有$ \frac{f[j]-f[k]}{g[j]-g[k]}<sum[i] $，则不等式右边是一个常数，因此可以用斜率优化dp。
@@ -718,7 +884,7 @@ getup(Q[Right-1],Q[Right],j)*getdown(Q[Right],i))
 	return 0;
 }
 ```
-#### 特别注意：若$ \frac{f[k_2]-f[k_1]}{g[k_1]-g[k_2]}<h[i] $，其中$ h[i] $不是单调递增的函数，则需要二分。
+**特别注意：若$ \frac{f[k_2]-f[k_1]}{g[k_1]-g[k_2]}<h[i] $，其中$ h[i] $不是单调递增的函数，则需要二分。**
 题意：N个任务,每个任务有一个完成所需时间$ t_i $，试将这N个任务分成若干批，在每批任务开始前，机器需要启动时间S，这批任务完成所需时间为各个任务需要时间的总和(同一批任务将在同一时刻完成)。每个任务的费用是它的完成时刻乘上一个费用系数$ c_i $。求最小总费用。
 分析：
 设f[i]表示把前i批任务分成若干批的最小费用.运用"费用提前计算"的思想,有如下转移方程:
@@ -764,8 +930,8 @@ int main()
     return 0;
 }
 ```
-### 5、可逆背包问题
-#### 题意：给定一个n个数的数列，每次以等概率抽取一个数（不放回），若抽出的数和大于a且小于等于b，则获胜；若大于b，则告负；否则继续抽牌。问获胜的概率。
+#### **5、可逆背包问题**
+题意：给定一个n个数的数列，每次以等概率抽取一个数（不放回），若抽出的数和大于a且小于等于b，则获胜；若大于b，则告负；否则继续抽牌。问获胜的概率。
 分析：设dp[j][k]表示抽了j张牌，和为k的方案数，（$ a<b\leq500,n\leq500 $）。
 枚举获胜前最后抽的一张牌，计算答案贡献复杂度为($ O(500^2) $)，但dp复杂度为($ O(500^3) $)，总复杂度为 ($ O(500^4) $)。但是可以利用“可逆背包”的做法，先预处理出dp[j][k]，然后枚举每张牌时，可以($ O(500^2) $) 撤销这张牌对dp[j][k]的贡献，再计算答案贡献。
 ```C++
@@ -803,15 +969,15 @@ int main()
 			for (int k=0;k<=n;k++)
 			{
 				if (j+p[i]>a && j+p[i]<=b) 
-ans+=f[j][k]*fac[k]*fac[n-k-1];
+                    ans+=f[j][k]*fac[k]*fac[n-k-1];
 			}
 	}
 	cout<<fixed<<setprecision(10)<<ans/fac[n]<<endl;
 return 0;
 } 
 ```
-### 6、好题整理
-#### 题意：钱在一个区间[a,b]内（未知），每次可以选择取x元钱： 
+#### **6、好题整理**
+题意：钱在一个区间[a,b]内（未知），每次可以选择取x元钱： 
 如果卡内余额不足x，花费b，卡内余额不动；
 如果卡内余额大于x，花费a，卡内余额减少x。
 问：如何操作可以花费最小的钱把钱全部取光。
@@ -822,7 +988,7 @@ return 0;
 $ f[0,x]=min(max(f[0,i-1]+b,f[0,x-i]+a)|i\in[1,x]) $
 $ f[1,x]=min(max(f[1,i-1]+b,f[0,x-i]+a)|i\in[1,x]) $
  
-其中$ f[0,x] $表示钱的区间为[0,x]， $ f[1,x] $表示钱的区间为[a,a+x](a>0)。
+其中$ f[0,x] $表示钱的区间为$[0,x]$， $ f[1,x] $表示钱的区间为$[a,a+x](a>0)$。
 注意到$ f[0,i-1]+b $单调增，$ f[0,x-i]+a $ 单调减，于是可以二分使得 $ f[0,i-1]+b $ 和$ f[0,x-i]+a $ 尽可能接近，以获取平衡的最小代价。得到一个近似最优解之后暴力在附近找。 
 ```C++
 #include <bits/stdc++.h>
